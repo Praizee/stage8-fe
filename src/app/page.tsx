@@ -1,7 +1,7 @@
 "use client";
 import { useState, useCallback, useEffect } from "react";
 import { AppHeader } from "@/components/layout/AppHeader";
-import { SchemaPanel } from "@/components/layout/SchemaPanel";
+import { LeftSidebar } from "@/components/layout/LeftSidebar";
 import { QueryBuilder } from "@/components/query-builder/QueryBuilder";
 import { QueryPreview } from "@/components/query-preview/QueryPreview";
 import { ResultsPanel } from "@/components/results-panel/ResultsPanel";
@@ -70,8 +70,8 @@ export default function Home() {
       <AppHeader onRun={handleRun} isRunning={isRunning} />
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Left: Schema reference panel */}
-        <SchemaPanel />
+        {/* Left: Schema / History / Presets sidebar */}
+        <LeftSidebar onSavePreset={() => {}} />
 
         {/* Center: Query builder */}
         <ScrollArea className="flex-1">
