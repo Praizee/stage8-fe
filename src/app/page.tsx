@@ -3,8 +3,9 @@ import { useState, useCallback } from "react";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { SchemaPanel } from "@/components/layout/SchemaPanel";
 import { QueryBuilder } from "@/components/query-builder/QueryBuilder";
+import { QueryPreview } from "@/components/query-preview/QueryPreview";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Code2, TableProperties } from "lucide-react";
+import { TableProperties } from "lucide-react";
 
 export default function Home() {
   const [isRunning, setIsRunning] = useState(false);
@@ -13,7 +14,7 @@ export default function Home() {
     setIsRunning(true);
     await new Promise((r) => setTimeout(r, 300));
     setIsRunning(false);
-    // Phases 4 & 5 will wire actual execution here
+    // Phase 5 will wire actual execution here
   }, []);
 
   return (
@@ -21,7 +22,7 @@ export default function Home() {
       <AppHeader onRun={handleRun} isRunning={isRunning} />
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Left: Schema panel */}
+        {/* Left: Schema reference panel */}
         <SchemaPanel />
 
         {/* Center: Query builder */}
@@ -37,31 +38,17 @@ export default function Home() {
           </main>
         </ScrollArea>
 
-        {/* Right: Preview + Results (Phase 4 & 5 placeholder) */}
+        {/* Right: Preview (Phase 4) + Results (Phase 5 placeholder) */}
         <aside className="w-[380px] flex-shrink-0 border-l border-border flex flex-col">
-          {/* Preview placeholder */}
-          <div className="flex-1 flex flex-col border-b border-border">
-            <div className="px-4 py-3 border-b border-border flex items-center gap-2">
-              <Code2 className="h-4 w-4 text-muted-foreground" />
-              <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                Query Preview
-              </h2>
-            </div>
-            <div className="flex-1 flex items-center justify-center p-6">
-              <div className="text-center space-y-2">
-                <Code2 className="h-8 w-8 text-muted-foreground/30 mx-auto" />
-                <p className="text-sm text-muted-foreground">Preview coming in Phase 4</p>
-                <p className="text-xs text-muted-foreground/60">
-                  SQL · MongoDB · GraphQL
-                </p>
-              </div>
-            </div>
+          {/* Live query preview — takes top 55% */}
+          <div className="flex-[55] min-h-0 flex flex-col border-b border-border">
+            <QueryPreview />
           </div>
 
-          {/* Results placeholder */}
-          <div className="flex-1 flex flex-col">
-            <div className="px-4 py-3 border-b border-border flex items-center gap-2">
-              <TableProperties className="h-4 w-4 text-muted-foreground" />
+          {/* Results placeholder — Phase 5 will replace this */}
+          <div className="flex-[45] min-h-0 flex flex-col">
+            <div className="px-4 py-2.5 border-b border-border flex items-center gap-2 flex-shrink-0">
+              <TableProperties className="h-3.5 w-3.5 text-muted-foreground" />
               <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Results
               </h2>
@@ -71,7 +58,7 @@ export default function Home() {
                 <TableProperties className="h-8 w-8 text-muted-foreground/30 mx-auto" />
                 <p className="text-sm text-muted-foreground">Run your query to see results</p>
                 <p className="text-xs text-muted-foreground/60">
-                  Mock data · Pagination · Sorting
+                  Pagination · Sorting · Mock data
                 </p>
               </div>
             </div>
