@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { useQueryStore } from "@/store/query-store";
 import { useSchemaStore } from "@/store/schema-store";
 import { useUIStore } from "@/store/ui-store";
+import { SavePresetDialog } from "@/components/dialogs/SavePresetDialog";
 import { ALL_SCHEMAS } from "@/lib/schemas";
 import type { QueryHistoryEntry, QueryPreset } from "@/lib/query-engine/types";
 
@@ -142,11 +143,12 @@ function HistoryTab() {
 
 // ─── Presets Tab ──────────────────────────────────────────────────────────────
 
-function PresetsTab({ onSaveNew }: { onSaveNew: () => void }) {
+function PresetsTab() {
   const { presets, deletePreset } = useUIStore();
   const { loadQuery } = useQueryStore();
   const { setActiveSchema } = useSchemaStore();
   const [loaded, setLoaded] = useState<string | null>(null);
+  const [saveOpen, setSaveOpen] = useState(false);
 
   function handleLoad(preset: QueryPreset) {
     const root = useQueryStore.getState().root;
@@ -160,9 +162,11 @@ function PresetsTab({ onSaveNew }: { onSaveNew: () => void }) {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <>
+      <SavePresetDialog open={saveOpen} onOpenChange={setSaveOpen} />
+      <div className="flex flex-col h-full">
       <div className="px-3 py-2">
-        <Button size="sm" variant="outline" className="w-full h-7 text-xs gap-1.5" onClick={onSaveNew}>
+        <Button size="sm" variant="outline" className="w-full h-7 text-xs gap-1.5" onClick={() => setSaveOpen(true)}>
           <BookmarkPlus className="h-3.5 w-3.5" />
           Save current query
         </Button>
@@ -212,16 +216,13 @@ function PresetsTab({ onSaveNew }: { onSaveNew: () => void }) {
         </ScrollArea>
       )}
     </div>
+    </>
   );
 }
 
 // ─── LeftSidebar ──────────────────────────────────────────────────────────────
 
-interface LeftSidebarProps {
-  onSavePreset: () => void;
-}
-
-export function LeftSidebar({ onSavePreset }: LeftSidebarProps) {
+export function LeftSidebar() {
   return (
     <aside className="w-64 flex-shrink-0 border-r border-border flex flex-col">
       <Tabs defaultValue="schema" className="flex flex-col flex-1 min-h-0">
@@ -246,7 +247,7 @@ export function LeftSidebar({ onSavePreset }: LeftSidebarProps) {
           <HistoryTab />
         </TabsContent>
         <TabsContent value="presets" className="flex-1 min-h-0 mt-0 data-[state=active]:flex data-[state=active]:flex-col">
-          <PresetsTab onSaveNew={onSavePreset} />
+          <PresetsTab />
         </TabsContent>
       </Tabs>
     </aside>
