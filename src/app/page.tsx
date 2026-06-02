@@ -1,21 +1,69 @@
 "use client";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { SchemaPanel } from "@/components/layout/SchemaPanel";
 import { QueryBuilder } from "@/components/query-builder/QueryBuilder";
 import { QueryPreview } from "@/components/query-preview/QueryPreview";
+import { ResultsPanel } from "@/components/results-panel/ResultsPanel";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { TableProperties } from "lucide-react";
+import { useQueryStore } from "@/store/query-store";
+import { useSchemaStore } from "@/store/schema-store";
+import { useUIStore } from "@/store/ui-store";
+import { executeQueryAsync, type ExecuteResult } from "@/lib/query-engine/executor";
+import { validateQuery } from "@/lib/query-engine/validator";
+import { DATASET_MAP } from "@/lib/mock-data";
 
 export default function Home() {
   const [isRunning, setIsRunning] = useState(false);
+  const [hasRun, setHasRun] = useState(false);
+  const [result, setResult] = useState<ExecuteResult | null>(null);
+
+  const addHistory = useUIStore((s) => s.addHistory);
 
   const handleRun = useCallback(async () => {
+    // Read latest store state at call time (avoids stale closure)
+    const root = useQueryStore.getState().root;
+    const schema = useSchemaStore.getState().activeSchema;
+
+    // Block if there are validation errors
+    const errors = validateQuery(root, schema);
+    if (errors.length > 0) return;
+
     setIsRunning(true);
-    await new Promise((r) => setTimeout(r, 300));
+    setHasRun(false);
+
+    const dataset = DATASET_MAP[schema.id] ?? [];
+    const execResult = await executeQueryAsync(root, dataset, schema, 220);
+
+    setResult(execResult);
+    setHasRun(true);
     setIsRunning(false);
-    // Phase 5 will wire actual execution here
-  }, []);
+
+    addHistory({
+      tree: root,
+      schemaId: schema.id,
+      resultCount: execResult.matched,
+    });
+  }, [addHistory]);
+
+  // Keyboard shortcut: Ctrl/Cmd + Enter = run query
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        e.preventDefault();
+        handleRun();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [handleRun]);
+
+  // Reset results when schema changes
+  const activeSchemaId = useSchemaStore((s) => s.activeSchema.id);
+  useEffect(() => {
+    setResult(null);
+    setHasRun(false);
+  }, [activeSchemaId]);
 
   return (
     <div className="flex flex-col h-screen overflow-hidden">
@@ -38,30 +86,16 @@ export default function Home() {
           </main>
         </ScrollArea>
 
-        {/* Right: Preview (Phase 4) + Results (Phase 5 placeholder) */}
-        <aside className="w-[380px] flex-shrink-0 border-l border-border flex flex-col">
-          {/* Live query preview — takes top 55% */}
-          <div className="flex-[55] min-h-0 flex flex-col border-b border-border">
+        {/* Right: Preview (top) + Results (bottom) */}
+        <aside className="w-[400px] flex-shrink-0 border-l border-border flex flex-col">
+          {/* Live query preview */}
+          <div className="flex-[50] min-h-0 flex flex-col border-b border-border">
             <QueryPreview />
           </div>
 
-          {/* Results placeholder — Phase 5 will replace this */}
-          <div className="flex-[45] min-h-0 flex flex-col">
-            <div className="px-4 py-2.5 border-b border-border flex items-center gap-2 flex-shrink-0">
-              <TableProperties className="h-3.5 w-3.5 text-muted-foreground" />
-              <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                Results
-              </h2>
-            </div>
-            <div className="flex-1 flex items-center justify-center p-6">
-              <div className="text-center space-y-2">
-                <TableProperties className="h-8 w-8 text-muted-foreground/30 mx-auto" />
-                <p className="text-sm text-muted-foreground">Run your query to see results</p>
-                <p className="text-xs text-muted-foreground/60">
-                  Pagination · Sorting · Mock data
-                </p>
-              </div>
-            </div>
+          {/* Results */}
+          <div className="flex-[50] min-h-0 flex flex-col">
+            <ResultsPanel result={result} isRunning={isRunning} hasRun={hasRun} />
           </div>
         </aside>
       </div>
