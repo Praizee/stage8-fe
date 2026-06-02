@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# QueryCraft: Visual Query Builder
 
-## Getting Started
+QueryCraft is a production-grade visual query builder constructed using **Next.js 16 (App Router)**, **TypeScript**, **Tailwind CSS (v4)**, and **Zustand**. It supports infinite logical grouping, schema validation, live SQL/MongoDB/GraphQL queries generation, and a real-time dataset execution simulator.
 
-First, run the development server:
+## Key Features
+
+- **Schema-Driven Fields & Operators:** Supports 18 operators matching field types (strings, numbers, booleans, dates, and enums).
+- **Infinite Group Nesting:** Build complex nested conditions with direct visual indicators, logical connectors (AND/OR), and collapsible sections.
+- **Tri-Format Code Preview:** Real-time generation of clean **SQL**, **MongoDB Query Documents**, and **GraphQL Filters** with custom regex syntax highlighting.
+- **Execution Simulator:** Filters deterministic mock records with real-time feedback, sortable results, and 25-item page pagination.
+- **JSON Import/Export:** Versioned query configuration serializer with structural integrity checks.
+- **Query History & Presets:** Persisted locally via `localStorage` with automated schema switching on restore.
+- **Keyboard Shortcuts:**
+  - `Ctrl + Enter` / `Cmd + Enter`: Run Query
+  - `Ctrl + S` / `Cmd + S`: Save Preset Dialog
+  - `Ctrl + E` / `Cmd + E`: Export Query
+  - `Ctrl + I` / `Cmd + I`: Import Query Dialog
+
+---
+
+## Architecture & Core Strategy
+
+### 1. Recursive Data Strategy
+
+Queries are structured as a tree of `QueryNode` items (which can be either a `Rule` leaf or a `ConditionGroup` branch). The state is managed as a single root `ConditionGroup`.
+Recursive helper functions traverse this tree to:
+
+- Generate SQL, MongoDB, and GraphQL outputs (`src/lib/query-engine/builder.ts`).
+- Perform type and operator validation (`src/lib/query-engine/validator.ts`).
+- Filter mock datasets against standard records (`src/lib/query-engine/executor.ts`).
+
+### 2. State Management with Zustand & Immer
+
+To support infinite nesting, Zustand handles deep structural mutations immutably using Immer. Deep traversals search and mutate specific node IDs via recursion (finding parents/siblings/rules in place).
+
+### 3. Drag & Drop Reordering
+
+Using `@dnd-kit/core` and `@dnd-kit/sortable`, rules and nested groups can be dragged and reordered directly within their parent logical groups.
+
+---
+
+## Project Setup
+
+### Installation
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Development Server
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Running Tests
 
-## Learn More
+Vitest tests cover the query builder engine, validator, dataset executor, JSON serializer, and condition group components.
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+pnpm test          # Run all 82 test cases
+pnpm test:watch    # Watch mode
+pnpm test:coverage # Code coverage report
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
