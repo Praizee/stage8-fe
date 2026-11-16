@@ -1,4 +1,4 @@
-import type { ConditionGroup, QueryNode, Rule, RuleValue, Schema, SchemaField } from "./types";
+import type { ConditionGroup, QueryNode, Rule, Schema, SchemaField } from "./types";
 
 // ─── Rule Evaluator ──────────────────────────────────────────────────────────
 

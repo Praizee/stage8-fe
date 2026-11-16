@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import { Sun, Moon, RotateCcw, Download, Upload, Database, Zap, Bookmark } from "lucide-react";
@@ -40,7 +41,8 @@ export function AppHeader({ onRun, isRunning }: AppHeaderProps) {
     URL.revokeObjectURL(url);
   }
 
-  function handleSchemaChange(id: string) {
+  function handleSchemaChange(id: string | null) {
+    if (!id) return;
     if (root.children.length > 0) {
       if (!confirm("Switching schema will reset your current query. Continue?")) return;
     }
@@ -100,34 +102,34 @@ export function AppHeader({ onRun, isRunning }: AppHeaderProps) {
         {/* Actions */}
         <div className="flex items-center gap-1">
           <Tooltip>
-            <TooltipTrigger asChild>
+            <TooltipTrigger render={
               <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground" onClick={() => setImportOpen(true)}>
                 <Upload className="h-4 w-4" />
               </Button>
-            </TooltipTrigger>
+            } />
             <TooltipContent side="bottom" className="text-xs">Import JSON <kbd className="ml-1 font-mono text-[10px] bg-muted px-1 rounded">Ctrl+I</kbd></TooltipContent>
           </Tooltip>
 
           <Tooltip>
-            <TooltipTrigger asChild>
+            <TooltipTrigger render={
               <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground" disabled={isEmpty} onClick={handleExport}>
                 <Download className="h-4 w-4" />
               </Button>
-            </TooltipTrigger>
+            } />
             <TooltipContent side="bottom" className="text-xs">Export JSON <kbd className="ml-1 font-mono text-[10px] bg-muted px-1 rounded">Ctrl+E</kbd></TooltipContent>
           </Tooltip>
 
           <Tooltip>
-            <TooltipTrigger asChild>
+            <TooltipTrigger render={
               <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground" disabled={isEmpty} onClick={() => setSavePresetOpen(true)}>
                 <Bookmark className="h-4 w-4" />
               </Button>
-            </TooltipTrigger>
+            } />
             <TooltipContent side="bottom" className="text-xs">Save preset <kbd className="ml-1 font-mono text-[10px] bg-muted px-1 rounded">Ctrl+S</kbd></TooltipContent>
           </Tooltip>
 
           <Tooltip>
-            <TooltipTrigger asChild>
+            <TooltipTrigger render={
               <Button
                 variant="ghost"
                 size="icon"
@@ -136,16 +138,16 @@ export function AppHeader({ onRun, isRunning }: AppHeaderProps) {
               >
                 <RotateCcw className="h-4 w-4" />
               </Button>
-            </TooltipTrigger>
+            } />
             <TooltipContent side="bottom" className="text-xs">Reset query</TooltipContent>
           </Tooltip>
 
           <Tooltip>
-            <TooltipTrigger asChild>
+            <TooltipTrigger render={
               <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
                 {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </Button>
-            </TooltipTrigger>
+            } />
             <TooltipContent side="bottom" className="text-xs">Toggle theme</TooltipContent>
           </Tooltip>
 

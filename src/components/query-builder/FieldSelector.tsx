@@ -14,7 +14,7 @@ interface FieldSelectorProps {
 export const FieldSelector = React.memo(function FieldSelector({ value, onChange, hasError }: FieldSelectorProps) {
   const { schema } = useQueryBuilderCtx();
   return (
-    <Select value={value} onValueChange={onChange}>
+    <Select value={value} onValueChange={(val) => { if (val) onChange(val); }}>
       <SelectTrigger className={`h-8 min-w-[130px] text-xs font-medium ${hasError ? "border-destructive ring-1 ring-destructive" : ""}`}>
         <SelectValue placeholder="Select field…" />
       </SelectTrigger>

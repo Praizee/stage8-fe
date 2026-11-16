@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { nanoid } from "nanoid";
-import type { ConditionGroup, QueryNode, Rule, Operator, RuleValue } from "@/lib/query-engine/types";
+import type { ConditionGroup, Rule, Operator, RuleValue } from "@/lib/query-engine/types";
 
 // ─── Helpers (work on mutable Immer drafts) ───────────────────────────────────
 

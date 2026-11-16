@@ -25,7 +25,7 @@ function CopyButton({ text }: { text: string }) {
 
   return (
     <Tooltip>
-      <TooltipTrigger asChild>
+      <TooltipTrigger render={
         <Button
           variant="ghost"
           size="icon"
@@ -38,7 +38,7 @@ function CopyButton({ text }: { text: string }) {
             <Copy className="h-3.5 w-3.5" />
           )}
         </Button>
-      </TooltipTrigger>
+      } />
       <TooltipContent side="left" className="text-xs">
         {copied ? "Copied!" : "Copy to clipboard"}
       </TooltipContent>

@@ -133,7 +133,7 @@ export const ResultsTable = React.memo(function ResultsTable({
 
   return (
     <div className="flex flex-col h-full min-h-0">
-      <ScrollArea className="flex-1" orientation="horizontal">
+      <ScrollArea className="flex-1">
         <table className="w-full text-xs border-collapse">
           <thead className="sticky top-0 bg-muted/80 backdrop-blur-sm z-10">
             <tr className="border-b border-border">

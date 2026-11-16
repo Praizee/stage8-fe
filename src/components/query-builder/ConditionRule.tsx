@@ -89,9 +89,9 @@ export const ConditionRule = React.memo(function ConditionRule({
       {/* Error indicator */}
       {hasError && (
         <Tooltip>
-          <TooltipTrigger asChild>
+          <TooltipTrigger render={
             <AlertCircle className="h-3.5 w-3.5 text-destructive flex-shrink-0" />
-          </TooltipTrigger>
+          } />
           <TooltipContent side="top" className="text-xs">Invalid condition</TooltipContent>
         </Tooltip>
       )}

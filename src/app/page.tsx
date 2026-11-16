@@ -58,12 +58,14 @@ export default function Home() {
     return () => window.removeEventListener("keydown", handler);
   }, [handleRun]);
 
-  // Reset results when schema changes
+  // Reset results when schema changes (during render to avoid cascading updates in useEffect)
   const activeSchemaId = useSchemaStore((s) => s.activeSchema.id);
-  useEffect(() => {
+  const [prevSchemaId, setPrevSchemaId] = useState(activeSchemaId);
+  if (activeSchemaId !== prevSchemaId) {
+    setPrevSchemaId(activeSchemaId);
     setResult(null);
     setHasRun(false);
-  }, [activeSchemaId]);
+  }
 
   return (
     <div className="flex flex-col h-screen overflow-hidden">
@@ -71,7 +73,7 @@ export default function Home() {
 
       <div className="flex flex-1 overflow-hidden">
         {/* Left: Schema / History / Presets sidebar */}
-        <LeftSidebar onSavePreset={() => {}} />
+        <LeftSidebar />
 
         {/* Center: Query builder */}
         <ScrollArea className="flex-1">

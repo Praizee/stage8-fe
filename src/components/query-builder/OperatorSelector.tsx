@@ -17,7 +17,7 @@ export const OperatorSelector = React.memo(function OperatorSelector({ value, fi
   const safeValue = validOps.includes(value) ? value : validOps[0];
 
   return (
-    <Select value={safeValue} onValueChange={(v) => onChange(v as Operator)}>
+    <Select value={safeValue} onValueChange={(v) => { if (v) onChange(v as Operator); }}>
       <SelectTrigger className="h-8 min-w-[130px] text-xs font-medium">
         <SelectValue />
       </SelectTrigger>
